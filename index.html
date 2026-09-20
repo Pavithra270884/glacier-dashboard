@@ -13,7 +13,7 @@
   <h1>Glacier GLOF Risk — Samudra Tapu</h1>
   <div id="result">Loading...</div>
   <script>
-    fetch('https://YOURSTORAGEACCOUNT.blob.core.windows.net/glacier-data/risk_scores.json')
+    fetch('https://glacierphase1data.blob.core.windows.net/glacier-data/risk_scores.json')
       .then(r => r.json())
       .then(d => {
         document.getElementById('result').innerHTML =
