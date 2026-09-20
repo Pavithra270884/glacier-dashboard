@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Glacier Risk Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 60px auto; }
+    .card { border-radius: 10px; padding: 24px; color: white; }
+    .low { background: #2e8b57; } .medium { background: #d99a1b; } .high { background: #c0392b; }
+  </style>
+</head>
+<body>
+  <h1>Glacier GLOF Risk — Samudra Tapu</h1>
+  <div id="result">Loading...</div>
+  <script>
+    fetch('https://YOURSTORAGEACCOUNT.blob.core.windows.net/glacier-data/risk_scores.json')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('result').innerHTML =
+          `<div class="card ${d.risk_band}">
+             <h2>Risk band: ${d.risk_band.toUpperCase()}</h2>
+             <p>Score: ${d.risk_score} / 100</p>
+             <p>Latest temperature: ${d.latest_temp_c}&deg;C</p>
+             <p>Latest rainfall: ${d.latest_rain_mm} mm</p>
+           </div>`;
+      })
+      .catch(() => { document.getElementById('result').innerText = 'No data yet — run the pipeline first.'; });
+  </script>
+</body>
+</html>
