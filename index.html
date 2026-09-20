@@ -4,28 +4,42 @@
   <meta charset="UTF-8">
   <title>Glacier Risk Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 500px; margin: 60px auto; }
-    .card { border-radius: 10px; padding: 24px; color: white; }
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 60px auto; }
+    .grid { display: flex; gap: 24px; flex-wrap: wrap; }
+    .card { border-radius: 10px; padding: 24px; color: white; flex: 1; min-width: 320px; }
     .low { background: #2e8b57; } .medium { background: #d99a1b; } .high { background: #c0392b; }
   </style>
 </head>
 <body>
-  <h1>Glacier GLOF Risk — Samudra Tapu</h1>
-  <div id="result">Loading...</div>
+  <h1>Glacier GLOF Risk Dashboard</h1>
+  <div class="grid" id="cards">Loading...</div>
   <script>
-    fetch('https://glacierphase1data.blob.core.windows.net/glacier-data/risk_scores.json')
-      .then(r => r.json())
-      .then(d => {
-        document.getElementById('result').innerHTML =
-          `<div class="card ${d.risk_band}">
-             <h2>Risk band: ${d.risk_band.toUpperCase()}</h2>
-             <p>Score: ${d.risk_score} / 100</p>
-             <p>Latest temperature: ${d.latest_temp_c}&deg;C</p>
-             <p>Latest rainfall: ${d.latest_rain_mm} mm</p>
-             <p style="margin-top:12px; font-style:italic;">${d.alert_text}</p>
-           </div>`;
-      })
-      .catch(() => { document.getElementById('result').innerText = 'No data yet — run the pipeline first.'; });
+    const sites = ["samudra_tapu", "sutri_dhaka"];
+    const container = document.getElementById('cards');
+    container.innerHTML = "";
+
+    sites.forEach(site => {
+      fetch(`https://glacierphase1data.blob.core.windows.net/glacier-data/risk_scores_${site}.json`)
+        .then(r => r.json())
+        .then(d => {
+          const card = document.createElement('div');
+          card.className = `card ${d.risk_band}`;
+          card.innerHTML = `
+            <h2>${d.site_name}</h2>
+            <h3>Risk band: ${d.risk_band.toUpperCase()}</h3>
+            <p>Score: ${d.risk_score} / 100</p>
+            <p>Latest temperature: ${d.latest_temp_c}&deg;C</p>
+            <p>Latest rainfall: ${d.latest_rain_mm} mm</p>
+            <p style="margin-top:12px; font-style:italic;">${d.alert_text}</p>
+          `;
+          container.appendChild(card);
+        })
+        .catch(() => {
+          const card = document.createElement('div');
+          card.innerText = `No data yet for ${site}`;
+          container.appendChild(card);
+        });
+    });
   </script>
 </body>
 </html>
